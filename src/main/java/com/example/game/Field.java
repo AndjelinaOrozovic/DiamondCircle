@@ -11,6 +11,8 @@ public class Field extends AnchorPane {
 
     private int idOfField = 0;
 
+    private int fieldNumber;
+
     private boolean hasDiamond = false;
 
     private boolean hasFigure = false;
@@ -28,6 +30,7 @@ public class Field extends AnchorPane {
         xFieldCoordinate = x;
         yFieldCoordinate = y;
         idOfField = id;
+        fieldNumber = x * Game.numberOfColumns + y + 1;
     }
 
 
@@ -93,6 +96,14 @@ public class Field extends AnchorPane {
 
     public void setHasHole(boolean hasHole) {
         this.hasHole = hasHole;
+    }
+
+    public int getFieldNumber() {
+        return fieldNumber;
+    }
+
+    public void setFieldNumber(int fieldNumber) {
+        this.fieldNumber = fieldNumber;
     }
 
     @Override

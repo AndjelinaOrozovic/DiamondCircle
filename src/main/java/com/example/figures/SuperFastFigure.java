@@ -1,6 +1,5 @@
 package com.example.figures;
 
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class SuperFastFigure extends Figure {

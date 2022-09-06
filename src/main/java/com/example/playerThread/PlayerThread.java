@@ -6,26 +6,26 @@ import com.example.figures.Figure;
 import com.example.figures.FlyingFigure;
 import com.example.game.Field;
 import com.example.game.Game;
+import com.example.gameTime.GameTime;
 import com.example.player.Player;
 import javafx.application.Platform;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.example.diamondcircle.StartWindowController.diamondCircleController;
 
 public class PlayerThread extends Thread {
 
-    public static String cardSource = "";
-    List<Player> listOfPlayers = DiamondCircleController.listOfPlayers;
+    private static String cardSource = "";
+
+    private List<Player> listOfPlayers = DiamondCircleController.listOfPlayers;
 
     private Player currentPlayer;
 
     @Override
     public void run() {
 
-        while (isAlive()) { //zamjeniti uslov - dok igra nije zavrsena
+        while (!Game.gameIsFinished) { //zamjeniti uslov - dok igra nije zavrsena
 
             while (diamondCircleController.hasPlayersForPlaying()) {
 
@@ -36,6 +36,10 @@ public class PlayerThread extends Thread {
                 Card currentCard = diamondCircleController.getNextCard(cardSource);  //izvuci kartu i postavi imageView
 
                 Figure currentFigure = currentPlayer.getCurrentFigure(); // uzmi sljedecu figuricu
+
+                if(currentFigure != null && currentFigure.getStartTime() == -1) {
+                    currentFigure.setStartTime(GameTime.i);
+                }
 
                 if (!currentPlayer.isPlaying()) {
                     continue; //preskace onog koji je zavrsio
@@ -55,8 +59,8 @@ public class PlayerThread extends Thread {
                                     DiamondCircleController.matrixOfImageViews.wait(); //kod za pauzu
                                 }
 
-                                if (p == 0) { //samo kada figura zapocne kretanje azuriraj opis karte
-                                    diamondCircleController.setCardDescriptionLabel(currentPlayer, numberForMoving, currentFieldId);
+                                if (p == 0 && currentFigure != null) { //samo kada figura zapocne kretanje azuriraj opis karte
+                                    diamondCircleController.setCardDescriptionLabel(currentPlayer, currentFigure, numberForMoving, currentFieldId);
                                 }
 
                                 if (currentFigure.getOldFiledId() >= 0 && p == 0) { //staro polje na kom je stajala figurica
@@ -65,16 +69,9 @@ public class PlayerThread extends Thread {
                                     oldField.setFigureOnField(null);
                                 }
 
-                                if (currentFieldId >= Game.getPathFields().size()) { //ako je doslo do zadnjeg polja
-                                    currentPlayer.getNextFigure();                  //uzmi sljedecu figuricu
-                                    if (currentPlayer.getCurrentFigure() == null) { //ako je figurica null to znaci da ih nema vise
-                                        currentPlayer.setPlaying(false);           // zavrsi igru za tog igraca
-                                    }
-                                    diamondCircleController.clearFieldFromFigure(Game.getPathFields().size() - 1); //ocisti zadnje polje od figurice i nastavi dalje
-                                    break;
-                                } else {
-
                                     Field field = diamondCircleController.getFieldByFieldId(currentFieldId); //ako nije zadnje polje dohvati ga
+                                   // System.out.println(field.getFieldNumber());
+                                    currentFigure.addToCurrentPath(field.getFieldNumber());
 
                                     diamondCircleController.setFieldView(field, currentFigure); //postavi figuricu na njega
                                     if (field.isHasDiamond()) { //ako ima dijamant pokupi ga
@@ -87,13 +84,13 @@ public class PlayerThread extends Thread {
                                         if (field.isHasFigure()) { //i figuricu treba da stane na polje na kom vec postoji figurica, uradi jos jedan potez
                                             p--;
                                         } else { //ako je polje slobodno
+                                         //   System.out.println(currentFigure.getCurrentPath().toString());
                                             currentFigure.setOldFiledId(currentFieldId);
                                             currentFigure.setNumberOfDiamonds(numberOfDiamonds);  //postavi broj dijamanata za sljedeci potez
                                             field.setHasFigure(true); //postavi to polje da ima figuricu
                                             field.setFigureOnField(currentFigure); //postavi i figuricu - kasnije zbog brisanja sa rupama
                                         }
                                     }
-                                }
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -105,6 +102,8 @@ public class PlayerThread extends Thread {
                             throw new RuntimeException(e);
                         }
                         if (currentFieldId == Game.getPathFields().size() - 1) {
+                            currentFigure.setEndTime(GameTime.i);
+                            currentFigure.setFinished(true);
                             currentPlayer.getNextFigure();                  //uzmi sljedecu figuricu
                             if (currentPlayer.getCurrentFigure() == null) { //ako je figurica null to znaci da ih nema vise
                                 currentPlayer.setPlaying(false);           // zavrsi igru za tog igraca
@@ -114,7 +113,6 @@ public class PlayerThread extends Thread {
                         }
                     }
                 } else {
-                    System.out.println("Izvucena specijalna karta!");
                     List<String> oldStyles = new ArrayList<>();
                     synchronized (DiamondCircleController.matrixOfImageViews) {
                         oldStyles = setHolesOnMatrix();
@@ -128,6 +126,15 @@ public class PlayerThread extends Thread {
                         unsetHoles(oldStyles);
                     }
                 }
+
+            }
+
+            if(!diamondCircleController.hasPlayersForPlaying()) {
+                Game.gameIsFinished = true;
+                System.out.println("Zavrsena igra!");
+                System.out.println(playersFinished());
+                System.out.println("Ukupno vrijeme trajanja igre:" + GameTime.i);
+                diamondCircleController.makeLabelsGray();
 
             }
 
@@ -148,8 +155,7 @@ public class PlayerThread extends Thread {
         List<String> oldStyles = new ArrayList<>();
         for (int p = 0; p < Game.getPathFields().size(); p++) {
             if (fieldsForHoles.contains(p)) {
-                final int fieldId = p;
-                Field field = diamondCircleController.getFieldByFieldId(fieldId);
+                Field field = diamondCircleController.getFieldByFieldId(p);
                 String backgroundColor = "-fx-background-color: black;";
                 String oldStyle = field.getStyle();
                 oldStyles.add(oldStyle);
@@ -161,7 +167,6 @@ public class PlayerThread extends Thread {
                     if (!(figure instanceof FlyingFigure)) {
                         Platform.runLater(() ->
                                 field.getChildren().clear());
-                        // if (!(figure instanceof FlyingFigure)) {
                         Player player = null;
                         String playerName = figure.getOwnerName();
                         for (int s = 0; s < listOfPlayers.size(); s++) {
@@ -169,8 +174,8 @@ public class PlayerThread extends Thread {
                                 player = listOfPlayers.get(s);
                             }
                         }
+                        figure.setEndTime(GameTime.i);
                         player.getNextFigure();
-                        //   }
                         field.setHasFigure(false);
                         field.setFigureOnField(null);
                     }
@@ -186,17 +191,15 @@ public class PlayerThread extends Thread {
         final int min = 1;
         final int max = Game.getPathFields().size() / 2;
         int numberOfHoles = (new Random()).nextInt(max - min + 1) + min;
-        System.out.println("Broj rupa:" + numberOfHoles);
         return styleFieldsForHoles(numberOfHoles);
     }
 
     private void unsetHoles(List<String> oldStyles) {
         int i = 0;
         for (int p = 0; p < Game.getPathFields().size(); p++) {
-            final int fieldId = p;
             final List<String> oldStylesFinal = oldStyles;
             final int j = i;
-            Field field = diamondCircleController.getFieldByFieldId(fieldId);
+            Field field = diamondCircleController.getFieldByFieldId(p);
             if (field.isHasHole() && j < oldStylesFinal.size()) {
                 Platform.runLater(() -> {
                     field.setStyle(oldStylesFinal.get(j));
@@ -212,6 +215,21 @@ public class PlayerThread extends Thread {
         listOfPlayers.remove(0);
         listOfPlayers.add(player);
         return player;
+    }
+
+    private String playersFinished() {
+
+        String igraci = "";
+        Collections.sort(listOfPlayers, new Comparator<Player>() {
+            @Override
+            public int compare(Player o1, Player o2) {
+                return o1.getCurrentPlayerId() - o2.getCurrentPlayerId();
+            }
+        });
+        for(int i = 0; i < listOfPlayers.size(); i++) {
+            igraci += listOfPlayers.get(i);
+        }
+        return igraci;
     }
 
 }

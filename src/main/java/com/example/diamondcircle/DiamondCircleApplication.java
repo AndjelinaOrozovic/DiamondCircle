@@ -1,5 +1,6 @@
 package com.example.diamondcircle;
 
+import com.example.util.FileWatcher;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +11,7 @@ import java.io.IOException;
 
 public class DiamondCircleApplication extends Application {
 
+    private static final String diamondImage = "/diamondImage.png";
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -17,10 +19,11 @@ public class DiamondCircleApplication extends Application {
 
         Scene scene = new Scene(root);
         stage.setTitle("Start Window!");
-        Image image = new Image("/diamondImage.png");
+        Image image = new Image(diamondImage);
         stage.getIcons().add(image);
         stage.setScene(scene);
         stage.show();
+        new FileWatcher().start();
     }
 
     public static void main(String[] args) {

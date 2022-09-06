@@ -9,7 +9,15 @@ import java.util.Properties;
 
 public class SetOfCards {
 
-    protected List<Card> listOfCards = new ArrayList<>();
+    private static final String cardsProperties = "src/main/resources/imageSources.properties";
+
+    private List<Card> listOfCards = new ArrayList<>();
+
+    private Card card1;
+    private Card card2;
+    private Card card3;
+    private Card card4;
+    private Card specialCard;
 
     public List<Card> getListOfCards() {
         return listOfCards;
@@ -19,14 +27,6 @@ public class SetOfCards {
         this.listOfCards = listOfCards;
     }
 
-    protected Card card1;
-    protected Card card2;
-    protected Card card3;
-    protected Card card4;
-    protected Card specialCard;
-
-    private static final String cardsProperties = "src/main/resources/imageSources.properties";
-
     public void addCards(List<Card> listOfCards, Card card, Integer numberOfCards) {
         for (int i = 0; i < numberOfCards; i++) {
             listOfCards.add(card);
@@ -35,7 +35,6 @@ public class SetOfCards {
 
     public void readCardImageSources() {
         try {
-
             Properties p = new Properties();
             p.load(new FileInputStream(cardsProperties));
 

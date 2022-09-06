@@ -15,7 +15,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -25,10 +28,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -37,65 +41,69 @@ import static javafx.scene.text.TextAlignment.CENTER;
 
 public class DiamondCircleController implements Initializable {
     @FXML
-    public Label label1;
+    private Label label1;
 
     @FXML
-    public Label label2;
+    private Label label2;
 
     @FXML
-    public Label label3;
+    private Label label3;
 
     @FXML
-    public Label label4;
+    private Label label4;
 
     @FXML
-    public GridPane gameMatrix;
+    private GridPane gameMatrix;
 
     @FXML
-    public ListView<Figure> listView; //prepraviti public u privete ispravnije je
+    private ListView<Figure> listView; //prepraviti public u privete ispravnije je
 
     public static Field[][] matrixOfImageViews = new Field[][]{};
 
-    public ImageView getCardImage() {
-        return cardImage;
-    }
-
-    public void setCardImage(ImageView cardImage) {
-        this.cardImage = cardImage;
-    }
+    @FXML
+    private ImageView cardImage;
 
     @FXML
-    public ImageView cardImage;
+    private Label gameTimeLabel;
 
     @FXML
-    public Label gameTimeLabel;
+    private Label cardDescription;
 
     @FXML
-    public Label cardDescription;
+    private Button pauseStartButton;
 
     @FXML
-    public Button pauseStartButton;
+    private Label numberOfGamesLabel;
 
     public static boolean pauseStart = false;
 
-    public static int counter = 0;
+    private static int counter = 0;
 
     public static List<Player> listOfPlayers;
 
-    public static List<String> listOfStylesOfEveryField = new ArrayList<>();
+    private static SetOfCards setOfCards = new SetOfCards();
 
-    public static List<Label> listOfLabelsOfIds = new ArrayList<>();
+    private static final String cardSource = "src/main/resources/startGame.png";
 
-    public static SetOfCards setOfCards = new SetOfCards();
+    private static final String figureFxml = "current-figure-path.fxml";
+
+    private static final int R_CONSTANT = 135;
+
+    private static final int G_CONSTANT = 206;
+
+    private static final int B_CONSTANT = 235;
+
+    private static final String NUMBER_OF_GAMES_TEXT = "Trenutni broj odigranih igara: ";
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        String cardSource = "src/main/resources/startGame.png";
         setImage(cardSource, cardImage);
         startMainWindow(Game.numberOfPlayers, Game.numberOfColumns);
         gameTimeLabel.setText("Vrijeme trajanja igre: 0s");
         gameTimeLabel.setTextAlignment(CENTER);
         gameTimeLabel.setWrapText(true);
+        numberOfGamesLabel.setText(NUMBER_OF_GAMES_TEXT + Game.numberOfGames);
         try {
             listOfPlayers = InitializingPlayersWithFigures.initializePlayerWithFigures(Game.numberOfPlayers);
             Label[] labels = {label1, label2, label3, label4};
@@ -114,7 +122,7 @@ public class DiamondCircleController implements Initializable {
         Game.readJSONFile(numberOfColumns);
 
         Label[] labels = {label1, label2, label3, label4};
-        Color[] colors = {Color.RED, Color.ORANGE, Color.GREEN, Color.BLUE}; //boju cuvati na nivou igraca zbog figurica
+        Color[] colors = {Color.RED, Color.ORANGE, Color.GREEN, Color.BLUE};
 
         for (Label label : labels) {
             label.setTextFill(Color.LIGHTGRAY);
@@ -130,9 +138,9 @@ public class DiamondCircleController implements Initializable {
 
     public void startColoring(int numberOfColumns) {
 
-        int r = 135;
-        int g = 206;
-        int b = 235;// smjestiti u staticke konstante
+        int r = R_CONSTANT;
+        int g = G_CONSTANT;
+        int b = B_CONSTANT;
 
         matrixOfImageViews = new Field[numberOfColumns][numberOfColumns];
 
@@ -144,32 +152,24 @@ public class DiamondCircleController implements Initializable {
 
                     Field pane = new Field();
 
-                    if (p == Game.getPathFields().size() - 1) {
-                        pane.setEnd(true);
-                    }
-
-                    Label labelNumber = new Label();
+                    //Label labelId = new Label();
 
                     pane.setPrefWidth(1000.0 / numberOfColumns);
                     pane.setPrefHeight(1000.0 / numberOfColumns);
 
                     if (Game.getPathFields().get(p).getIdOfField() >= 0) {
                         if (Game.getPathFields().get(p).getxFieldCoordinate() == i && Game.getPathFields().get(p).getyFieldCoordinate() == j) {
-                            labelNumber.setText(String.valueOf(Game.getPathFields().get(p).getIdOfField()));
+                            //labelId.setText(String.valueOf(Game.getPathFields().get(p).getIdOfField()));
                             pane.setStyle(blueStyle);
                             pane.setxFieldCoordinate(j);
                             pane.setyFieldCoordinate(i);
                             pane.setIdOfField(p);
-                            listOfStylesOfEveryField.add(blueStyle);
-                            listOfLabelsOfIds.add(labelNumber);
+                            pane.setFieldNumber(i * numberOfColumns + j + 1);
                             matrixOfImageViews[i][j] = pane;
-                            matrixOfImageViews[i][j].getChildren().add(labelNumber);
+                            //matrixOfImageViews[i][j].getChildren().addAll(labelId);
+                            gameMatrix.add(pane, j, i);
+                            //gameMatrix.add(labelId, j, i);
                         }
-
-                        gameMatrix.add(pane, j, i);
-
-
-                        gameMatrix.add(labelNumber, j, i);
 
                     }
                 }
@@ -177,6 +177,14 @@ public class DiamondCircleController implements Initializable {
             r -= 2;
             g -= 5;
             b -= 3;
+        }
+
+        for (int i = 0; i < numberOfColumns; i++) {
+            for (int j = 0; j < numberOfColumns; j++) {
+                Label labelfieldNumber = new Label();
+                labelfieldNumber.setText(String.valueOf(i * numberOfColumns + j + 1));
+                gameMatrix.add(labelfieldNumber, j, i);
+            }
         }
 
     }
@@ -188,7 +196,6 @@ public class DiamondCircleController implements Initializable {
                 observableFigures.add(f);
             }
         }
-
         listView.setItems(observableFigures);
         listView.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -200,38 +207,61 @@ public class DiamondCircleController implements Initializable {
                     String color = item.getColor().toString();
                     switch (color) {
                         case "0xffa500ff":
-                            setText("Orange: " + item.getClass().getSimpleName());
+                            setText("Orange: " + item.getClass().getSimpleName() + item.idFigure);
                             String orangeStyle = "-fx-background-color: LIGHTSALMON";
                             setStyle(orangeStyle);
                             break;
                         case "0xff0000ff":
-                            setText("Red: " + item.getClass().getSimpleName());
+                            setText("Red: " + item.getClass().getSimpleName() + item.idFigure);
                             String redStyle = "-fx-background-color: LIGHTCORAL";
                             setStyle(redStyle);
                             break;
                         case "0x008000ff":
-                            setText("Green: " + item.getClass().getSimpleName());
+                            setText("Green: " + item.getClass().getSimpleName() + item.idFigure);
                             String lightStyle = "-fx-background-color: LIGHTGREEN";
                             setStyle(lightStyle);
                             break;
                         case "0x0000ffff":
-                            setText("Blue: " + item.getClass().getSimpleName());
+                            setText("Blue: " + item.getClass().getSimpleName() + item.idFigure);
                             String blueStyle = "-fx-background-color: LIGHTBLUE";
                             setStyle(blueStyle);
                             break;
                     }
 
-                    setOnMouseClicked(e -> System.out.println(item.getColor() + item.getClass().getSimpleName()));
+                    setOnMouseClicked(e -> {
+                        figureClicked(item);
+                    });
                 }
             }
         });
+    }
+
+    private Stage figureStage;
+
+    private Parent root;
+
+    private void figureClicked(Figure item) {
+        try {
+            Figure clickedFigure = item;
+            CurrentFigureController.selectedFigure = clickedFigure;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(figureFxml));
+            root = loader.load();
+            figureStage = new Stage();
+            figureStage.setTitle("Predjeni put figure");
+            figureStage.setScene(new Scene(root));
+            figureStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startThreads(ActionEvent actionEvent) throws InterruptedException {
 
         pauseStart = !pauseStart;
 
-        if(!pauseStart) {
+        if (!pauseStart) {
             Platform.runLater(() -> {
                 pauseStartButton.setText("Pokreni");
             });
@@ -304,9 +334,9 @@ public class DiamondCircleController implements Initializable {
         Platform.runLater(() -> {
             if (field.isHasDiamond()) {
                 field.getChildren().clear();
-                field.setHasDiamond(false); //ako polje kojim prolazimo ima dijamant skinemo ga sa guia
+                field.setHasDiamond(false);
             }
-            ImageView iv = currentFigure.getImageView(); //postavimo slicicu figurice (za sad igramo samo sa prvom, tj index 0)
+            ImageView iv = currentFigure.getImageView();
             field.getChildren().add(iv);
             AnchorPane.setBottomAnchor(iv, 1.0);
             AnchorPane.setRightAnchor(iv, 1.0);
@@ -319,10 +349,23 @@ public class DiamondCircleController implements Initializable {
         });
     }
 
-    public void setCardDescriptionLabel(Player currentPlayer, int numberForMoving, int currentFieldId) {
+    public void setCardDescriptionLabel(Player currentPlayer, Figure currentFigure, int numberForMoving, int currentFieldId) {
+        Field currentField;
+        Field nextField;
+        if (currentFieldId >= 24) {
+            currentField = getFieldByFieldId(24);
+            nextField = getFieldByFieldId(24);
+        } else if((currentFieldId + numberForMoving) >= 24) {
+            currentField = getFieldByFieldId(currentFieldId);
+            nextField = getFieldByFieldId(24);
+        }
+        else {
+            currentField = getFieldByFieldId(currentFieldId);
+            nextField = getFieldByFieldId(currentFieldId + numberForMoving - 1);
+        }
         Platform.runLater(() -> {
-            cardDescription.setText("Na potezu je igrac: " + currentPlayer.getName() + ", figura: " + currentPlayer.getCurrentFigureID() +
-                    ", prelazi: " + numberForMoving + " polja, pomjera se sa pozicije: " + currentFieldId + ", na poziciju: " + (currentFieldId + numberForMoving - 1));
+            cardDescription.setText("Na potezu je igrac: " + currentPlayer.getName() + ", figura: " + currentFigure.idFigure +
+                    ", prelazi: " + numberForMoving + " polja, pomjera se sa pozicije: " + currentField.getFieldNumber() + ", na poziciju: " + nextField.getFieldNumber());
         });
     }
 
@@ -331,7 +374,7 @@ public class DiamondCircleController implements Initializable {
         Border activePlayer = new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT));
         Border inactivePlayer = new Border(new BorderStroke(Color.RED, BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
-        if((currentPlayer.getName()).equals(label1.getText())) {
+        if ((currentPlayer.getName()).equals(label1.getText())) {
             Platform.runLater(() ->
             {
                 label1.setBorder(activePlayer);
@@ -339,7 +382,10 @@ public class DiamondCircleController implements Initializable {
                 label3.setBorder(inactivePlayer);
                 label4.setBorder(inactivePlayer);
             });
-        } else if((currentPlayer.getName()).equals(label2.getText())) {
+            if (!currentPlayer.isPlaying()) {
+                label1.setTextFill(Color.GRAY);
+            }
+        } else if ((currentPlayer.getName()).equals(label2.getText())) {
             Platform.runLater(() ->
             {
                 label2.setBorder(activePlayer);
@@ -347,7 +393,10 @@ public class DiamondCircleController implements Initializable {
                 label3.setBorder(inactivePlayer);
                 label4.setBorder(inactivePlayer);
             });
-        } else if((currentPlayer.getName()).equals(label3.getText())) {
+            if (!currentPlayer.isPlaying()) {
+                label2.setTextFill(Color.GRAY);
+            }
+        } else if ((currentPlayer.getName()).equals(label3.getText())) {
             Platform.runLater(() ->
             {
                 label3.setBorder(activePlayer);
@@ -355,7 +404,10 @@ public class DiamondCircleController implements Initializable {
                 label1.setBorder(inactivePlayer);
                 label4.setBorder(inactivePlayer);
             });
-        } else if((currentPlayer.getName()).equals(label4.getText())) {
+            if (!currentPlayer.isPlaying()) {
+                label3.setTextFill(Color.GRAY);
+            }
+        } else if ((currentPlayer.getName()).equals(label4.getText())) {
             Platform.runLater(() ->
             {
                 label4.setBorder(activePlayer);
@@ -363,7 +415,43 @@ public class DiamondCircleController implements Initializable {
                 label3.setBorder(inactivePlayer);
                 label1.setBorder(inactivePlayer);
             });
+            if (!currentPlayer.isPlaying()) {
+                label4.setTextFill(Color.GRAY);
+            }
         }
+    }
+
+    public void makeLabelsGray() {
+        Border inactivePlayer = new Border(new BorderStroke(Color.RED, BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderWidths.DEFAULT));
+        Platform.runLater(() -> {
+        label1.setTextFill(Color.GRAY);
+        label1.setBorder(inactivePlayer);
+        label2.setTextFill(Color.GRAY);
+        label2.setBorder(inactivePlayer);
+        label3.setTextFill(Color.GRAY);
+        label3.setBorder(inactivePlayer);
+        label4.setTextFill(Color.GRAY);
+        label4.setBorder(inactivePlayer);
+        cardDescription.setText("IGRA JE ZAVRSENA!");
+        });
+        for (int p = 0; p < Game.getPathFields().size(); p++) {
+            for (int i = 0; i < Game.numberOfColumns; i++) {
+                for (int j = 0; j < Game.numberOfColumns; j++) {
+                    if (Game.getPathFields().get(p).getIdOfField() >= 0 && Game.getPathFields().get(p).getxFieldCoordinate() == i && Game.getPathFields().get(p).getyFieldCoordinate() == j && matrixOfImageViews[i][j].isHasDiamond()) {
+                        final int firstCord = i;
+                        final int secCoordinate = j;
+                        Platform.runLater(() -> {
+                            matrixOfImageViews[firstCord][secCoordinate].getChildren().clear();
+                            matrixOfImageViews[firstCord][secCoordinate].setHasDiamond(false);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateNumberOfGames() {
+        Platform.runLater(() -> numberOfGamesLabel.setText(NUMBER_OF_GAMES_TEXT + Game.numberOfGames));
     }
 
 }

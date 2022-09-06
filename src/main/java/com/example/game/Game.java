@@ -1,6 +1,6 @@
 package com.example.game;
 
-import com.example.UtilHelper;
+import com.example.util.UtilHelper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,8 +17,11 @@ public abstract class Game {
 
     public static Integer numberOfPlayers;
 
+    public static boolean gameIsFinished = false;
+
     private static List<Field> pathFields = new ArrayList<Field>();
 
+    public static int numberOfGames = 0;
 
     public static List<Field> getPathFields() {
         return pathFields;

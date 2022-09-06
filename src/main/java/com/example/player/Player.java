@@ -2,17 +2,20 @@ package com.example.player;
 
 import com.example.figures.Figure;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Player {
+public class Player implements Serializable {
 
     private String name;
 
-    private static int currentPlayerId = 0;
+    private int currentPlayerId = 1;
+
+    private static int playerIdStatic = 1;
 
     private boolean isPlaying = true;
 
-    List<Figure> figures;
+    private List<Figure> figures;
 
     private int currentFigureID;
 
@@ -26,7 +29,7 @@ public class Player {
         }
         currentFigure = figures.get(0);
         currentFigureID = 0;
-        currentPlayerId++;
+        currentPlayerId = playerIdStatic++;
     }
 
     public String getName() {
@@ -66,6 +69,14 @@ public class Player {
         currentFigure.setOldFiledId(-1);
     }
 
+    private String figuresListToString() {
+        String figuresList = "";
+        for(int i = 0; i < figures.size(); i++) {
+            figuresList += figures.get(i).toString() + "\n";
+        }
+        return figuresList;
+    }
+
     public int getCurrentFigureID() {
         return currentFigureID;
     }
@@ -92,9 +103,12 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' + ", currentFigureId: " + currentFigureID +
-                ", figures=" + figures +
-                '}' + '\n';
+        return "\nIgrac " + currentPlayerId + " - " + name + '\n' + figuresListToString();
+//        return "Igrac " + currentPlayerId + " - " + name + '\n'
+//        + figuresListToString();
+//        return "Player{" +
+//                "name='" + name + '\'' + ", currentFigureId: " + currentFigureID +
+//                ", figures=" + figures +
+//                '}' + '\n';
     }
 }

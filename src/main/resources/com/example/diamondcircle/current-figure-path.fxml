@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+
+<AnchorPane prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.diamondcircle.CurrentFigureController">
+   <children>
+      <AnchorPane layoutX="272.0" layoutY="16.0" prefHeight="563.0" prefWidth="647.0">
+         <children>
+            <GridPane fx:id="figurePathGridPane" layoutX="13.0" layoutY="13.0" gridLinesVisible="true" prefHeight="435.0" prefWidth="400.0" />
+         </children></AnchorPane>
+      <ImageView fx:id="figureImage" fitHeight="74.0" fitWidth="79.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="figureName" layoutX="40.0" layoutY="111.0" text="Label" />
+      <Label fx:id="figureTime" layoutX="40.0" layoutY="145.0" text="Label" />
+   </children>
+</AnchorPane>

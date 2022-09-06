@@ -1,6 +1,5 @@
 package com.example.figures;
 
-import com.example.diamondcircle.DiamondCircleController;
 import javafx.scene.paint.Color;
 
 public class FlyingFigure extends Figure {

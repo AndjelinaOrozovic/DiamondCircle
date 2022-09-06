@@ -30,7 +30,7 @@
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="896.0" style="-fx-spacing: 150; -fx-padding: 10; -fx-background-color: #E0FFFF;" GridPane.columnIndex="3" GridPane.rowIndex="3">
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="39.0" prefWidth="199.0" text="Trenutni broj odigranih igara: 10" textAlignment="CENTER" wrapText="true" />
+            <Label fx:id="numberOfGamesLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="39.0" prefWidth="199.0" text="Trenutni broj odigranih igara: 0" textAlignment="CENTER" wrapText="true" />
             <Label alignment="CENTER" prefHeight="27.0" prefWidth="149.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="DiamondCircle" />
             <Button fx:id="pauseStartButton" mnemonicParsing="false" onAction="#startThreads" prefHeight="25.0" prefWidth="181.0" text="Pokreni" />
          </children>

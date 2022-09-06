@@ -3,6 +3,7 @@ package com.example.card;
 public class Card {
 
     private String cardSource;
+
     private Integer numberOfFields;
 
     public String getCardSource() {

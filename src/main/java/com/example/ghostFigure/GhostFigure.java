@@ -15,14 +15,14 @@ import static com.example.diamondcircle.DiamondCircleController.matrixOfImageVie
 
 public class GhostFigure extends Thread {
 
-    int counter = 0;
+    private int counter = 0;
 
-    private static final String diamondGhostUri = "src/main/resources/diamondGhost.png";
+    private static final String diamondGhostPathName = "src/main/resources/diamondGhost.png";
 
     @Override
     public void run() {
 
-        while (isAlive()) {
+        while (!Game.gameIsFinished) {
             synchronized (matrixOfImageViews) {
 
                 try {
@@ -69,7 +69,7 @@ public class GhostFigure extends Thread {
                                         final int firstCoordinate = i;
                                         final int secondCoordinate = j;
                                         Platform.runLater(() -> {
-                                            File file = new File(diamondGhostUri);
+                                            File file = new File(diamondGhostPathName);
                                             Image image = new Image(file.toURI().toString());
                                             ImageView iv = new ImageView(image);
                                             Field field = matrixOfImageViews[firstCoordinate][secondCoordinate];
@@ -77,7 +77,7 @@ public class GhostFigure extends Thread {
                                                 field.getChildren().add(iv);
                                                 field.setHasDiamond(true);
                                                 AnchorPane.setTopAnchor(iv, 1.0);
-                                                AnchorPane.setLeftAnchor(iv, 1.0);
+                                                AnchorPane.setRightAnchor(iv, 1.0);
                                             }
                                         });
                                     }
