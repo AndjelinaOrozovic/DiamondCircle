@@ -9,15 +9,19 @@ import static com.example.diamondcircle.StartWindowController.diamondCircleContr
 
 public class FileWatcher extends Thread {
 
-    private static final Path directory = Paths.get("History");
+    private static final Path DIRECTORY = Paths.get("Results");
+
+    private static final String FILE_TYPE = ".txt";
+
+    private static final String FILE_PREFIX = "IGRA_";
 
     @Override
     public void run() {
-        Game.numberOfGames = Objects.requireNonNull(directory.toFile().listFiles()).length;
+        Game.numberOfGames = Objects.requireNonNull(DIRECTORY.toFile().listFiles()).length;
 
         try {
             WatchService watchService = FileSystems.getDefault().newWatchService();
-            directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+            DIRECTORY.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
 
             while(true) {
                 WatchKey key;
@@ -31,8 +35,8 @@ public class FileWatcher extends Thread {
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     Path fileName = ev.context();
 
-                    if(fileName.toString().trim().endsWith(".txt") && fileName.toString().trim().startsWith("IGRA_")) {
-                        Game.numberOfGames = Objects.requireNonNull(directory.toFile().listFiles()).length;
+                    if(fileName.toString().trim().endsWith(FILE_TYPE) && fileName.toString().trim().startsWith(FILE_PREFIX)) {
+                        Game.numberOfGames = Objects.requireNonNull(DIRECTORY.toFile().listFiles()).length;
                         diamondCircleController.updateNumberOfGames();
                     }
                 }
@@ -44,7 +48,7 @@ public class FileWatcher extends Thread {
             }
 
         } catch (Exception e) {
-           e.printStackTrace();
+            UtilHelper.logExceptions(FileWatcher.class, e);
         }
     }
 

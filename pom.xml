@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example</groupId>
+    <groupId>org.unibl.etf</groupId>
     <artifactId>DiamondCircle</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>DiamondCircle</name>
@@ -138,7 +138,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.diamondcircle/com.example.diamondcircle.DiamondCircleApplication</mainClass>
+                            <mainClass>org.unibl.etf.diamondcircle/org.unibl.etf.diamondcircle.DiamondCircleApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

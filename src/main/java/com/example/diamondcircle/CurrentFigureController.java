@@ -1,8 +1,8 @@
 package com.example.diamondcircle;
 
-import com.example.figures.Figure;
 import com.example.game.Field;
 import com.example.game.Game;
+import com.example.figures.Figure;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,10 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static com.example.util.UtilHelper.logExceptions;
 
 
 public class CurrentFigureController implements Initializable {
@@ -38,26 +39,41 @@ public class CurrentFigureController implements Initializable {
 
     private static final int B_CONSTANT = 235;
 
+    private static final int R_CONSTANT_SUBTRACT = 2;
+
+    private static final int G_CONSTANT_SUBTRACT = 5;
+
+    private static final int B_CONSTANT_SUBTRACT = 3;
+
     public static Field[][] currentPathMatrix = new Field[][]{};
+
+    private static final String FIGURE_IN_GAME = "Figurica je provela u igri: ";
+
+    private static final String ID = ", id: ";
+
+    private static final String SECONDS = "s";
+
+    private static final String FIGURE_NOT_IN_GAME = "Figurica jos nije zapocela igru!";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             setImage(selectedFigure.getImageSource(), figureImage);
-            figureName.setText(selectedFigure.getClass().getSimpleName() + ", id: " + selectedFigure.idFigure);
+            figureName.setText(selectedFigure.getClass().getSimpleName() + ID + selectedFigure.idFigure);
             colorCurrentPath();
             if(selectedFigure.calculateTime() != -1) {
-                figureTime.setText("Figurica je u igri: " + selectedFigure.calculateTime() + "s");
+                figureTime.setText(FIGURE_IN_GAME + selectedFigure.calculateTime() + SECONDS);
             } else {
-                figureTime.setText("Figurica jos nije zapocela igru!");
+                figureTime.setText(FIGURE_NOT_IN_GAME);
             }
             startColoring();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logExceptions(CurrentFigureController.class, e);
         }
     }
 
     private void startColoring() {
+
         int r = R_CONSTANT;
         int g = G_CONSTANT;
         int b = B_CONSTANT;
@@ -90,16 +106,16 @@ public class CurrentFigureController implements Initializable {
                     }
                 }
             }
-            r -= 2;
-            g -= 5;
-            b -= 3;
+            r -= R_CONSTANT_SUBTRACT;
+            g -= G_CONSTANT_SUBTRACT;
+            b -= B_CONSTANT_SUBTRACT;
         }
 
         for(int i = 0; i < numberOfColumns; i++) {
             for(int j = 0; j < numberOfColumns; j++) {
-                Label labelfieldNumber = new Label();
-                labelfieldNumber.setText(String.valueOf(i * numberOfColumns + j + 1));
-                figurePathGridPane.add(labelfieldNumber, j, i);
+                Label labelFieldNumber = new Label();
+                labelFieldNumber.setText(String.valueOf(i * numberOfColumns + j + 1));
+                figurePathGridPane.add(labelFieldNumber, j, i);
             }
         }
     }
@@ -112,8 +128,7 @@ public class CurrentFigureController implements Initializable {
 
     private void colorCurrentPath() {
         int lastReachedId = selectedFigure.getCurrentFieldId();
-        System.out.println(lastReachedId);
-        String backgroundColor = "-fx-background-color: blue;";
+        String backgroundColor = "-fx-background-color: blue;"  + "-fx-border-color: black;";
         for(int p = 0; p < lastReachedId; p++) {
             for (int i = 0; i < Game.getPathFields().size(); i++) {
                 for (int j = 0; j < Game.getPathFields().size(); j++) {
@@ -124,9 +139,9 @@ public class CurrentFigureController implements Initializable {
                         final int jFinal = j;
                         Platform.runLater(() -> {
                             figurePathGridPane.add(field, jFinal, iFinal);
-                            Label labelfieldNumber = new Label();
-                            labelfieldNumber.setText(String.valueOf(iFinal * Game.numberOfColumns + jFinal + 1));
-                            figurePathGridPane.add(labelfieldNumber, jFinal, iFinal);
+                            Label labelFieldNumber = new Label();
+                            labelFieldNumber.setText(String.valueOf(iFinal * Game.numberOfColumns + jFinal + 1));
+                            figurePathGridPane.add(labelFieldNumber, jFinal, iFinal);
                         });
                     }
 
@@ -134,6 +149,5 @@ public class CurrentFigureController implements Initializable {
             }
         }
     }
-
 
 }

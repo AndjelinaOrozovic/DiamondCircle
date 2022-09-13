@@ -1,4 +1,4 @@
-module com.example.diamondcircle {
+module org.unibl.etf.diamondcircle {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;

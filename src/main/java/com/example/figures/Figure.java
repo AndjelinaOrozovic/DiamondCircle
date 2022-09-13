@@ -4,7 +4,6 @@ import com.example.gameTime.GameTime;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public abstract class Figure implements Serializable {
 
-    private Color color;
+    private final Color color;
 
     private String colorReadable;
 
@@ -22,19 +21,15 @@ public abstract class Figure implements Serializable {
 
     private String ownerName;
 
-    protected int numberOfFieldsForMoving; //broj polja koje prelazi
+    protected int numberOfFieldsForMoving;
 
-    private String imageSource;
+    private final String imageSource;
 
     private ImageView imageView;
 
-    protected boolean canFallIntoHolle; // da li moze upasti u rupu
+    protected int numberOfDiamonds = 0;
 
-    protected boolean fellIntoHolle; // da li je upala u rupu
-
-    protected int numberOfDiamonds = 0; // broj dijamanata koje je pokupila
-
-    private List<Integer> currentPath = new ArrayList<>(); // trenutna putanja
+    private List<Integer> currentPath = new ArrayList<>();
 
     private int currentFieldId;
 
@@ -47,6 +42,16 @@ public abstract class Figure implements Serializable {
     private int startTime = -1;
 
     private int endTime = -1;
+
+    private static final String ORANGE = "Narandzasta";
+
+    private static final String RED = "Crvena";
+
+    private static final String GREEN = "Zelena";
+
+    private static final String BLUE = "Plava";
+
+    private static final String NO_PATH = "Nema putanje";
 
     public Figure(Color color, String imageSource) {
         this.color = color;
@@ -62,71 +67,41 @@ public abstract class Figure implements Serializable {
     private void setColorReadable(Color color) {
         switch (color.toString()) {
             case "0xffa500ff":
-                colorReadable = "Crvena";
+                colorReadable = RED;
                 break;
             case "0xff0000ff":
-                colorReadable = "Narandzasta";
+                colorReadable = ORANGE;
                 break;
             case "0x008000ff":
-                colorReadable = "Zelena";
+                colorReadable = GREEN;
                 break;
             case "0x0000ffff":
-                colorReadable = "Plava";
+                colorReadable = BLUE;
                 break;
         }
     }
 
     private String getPathLikeString() {
-        String path = "";
+        StringBuilder path = new StringBuilder();
         if(currentPath.size() > 0) {
         for(int i = 0; i < currentPath.size() - 1; i++) {
-            path += currentPath.get(i) + "-";
+            path.append(currentPath.get(i)).append("-");
         }
-            path += currentPath.get(currentPath.size() - 1);
-        } else path = "nema putanje";
+            path.append(currentPath.get(currentPath.size() - 1));
+        } else path = new StringBuilder(NO_PATH);
         return "(" + path + ")";
     }
 
-
-
     public Color getColor() {
         return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public boolean isFellIntoHolle() {
-        return fellIntoHolle;
-    }
-
-    public void setFellIntoHolle(boolean fellIntoHolle) {
-        this.fellIntoHolle = fellIntoHolle;
-    }
-
-    public int getNumberOfDiamonds() {
-        return numberOfDiamonds;
     }
 
     public void setNumberOfDiamonds(int numberOfDiamonds) {
         this.numberOfDiamonds = numberOfDiamonds;
     }
 
-    public List<Integer> getCurrentPath() {
-        return currentPath;
-    }
-
-    public void setCurrentPath(List<Integer> currentPath) {
-        this.currentPath = currentPath;
-    }
-
     public ImageView getImageView() {
         return imageView;
-    }
-
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
     }
 
     public int getCurrentFieldId() {
@@ -143,10 +118,6 @@ public abstract class Figure implements Serializable {
 
     public void setOldFiledId(int oldFiledId) {
         this.oldFiledId = oldFiledId;
-    }
-
-    public boolean isFinished() {
-        return isFinished;
     }
 
     public void setFinished(boolean finished) {
@@ -178,20 +149,12 @@ public abstract class Figure implements Serializable {
         this.startTime = startTime;
     }
 
-    public int getEndTime() {
-        return endTime;
-    }
-
     public void setEndTime(int endTime) {
         this.endTime = endTime;
     }
 
     public String getImageSource() {
         return imageSource;
-    }
-
-    public void setImageSource(String imageSource) {
-        this.imageSource = imageSource;
     }
 
     public int calculateTime() {
@@ -208,19 +171,6 @@ public abstract class Figure implements Serializable {
         return "\tFigura " + idFigure + " (" + this.getClass().getSimpleName() + ", "
                 + colorReadable + ") - predjeni put " + getPathLikeString() + " - stigla do cilja (" +
                 isMakeItToTheEnd + ")";
-
-//        return "\nFigure{" +
-//                "color='" + color + '\'' +
-//                ",idFigure=" + idFigure +
-//                ", numberOfFieldsForMoving=" + numberOfFieldsForMoving +
-//                ", currentFieldId=" + currentFieldId +
-////                ", canFallIntoHolle=" + canFallIntoHolle +
-////                ", fellIntoHolle=" + fellIntoHolle +
-//                ", numberOfDiamonds=" + numberOfDiamonds +
-//                ", ownerName=" + ownerName +
-////                ", currentPath=" + currentPath +
-//                ", imageSource=" + imageSource +
-//                '}' + '\n';
     }
 
 }

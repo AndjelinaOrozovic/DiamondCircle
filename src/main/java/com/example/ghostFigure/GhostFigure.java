@@ -11,13 +11,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import static com.example.diamondcircle.DiamondCircleController.matrixOfImageViews;
+import static com.example.util.UtilHelper.logExceptions;
 
 public class GhostFigure extends Thread {
 
     private int counter = 0;
 
-    private static final String diamondGhostPathName = "src/main/resources/diamondGhost.png";
+    private static final String DIAMOND_GHOST_PATH_NAME = "src/main/resources/diamondGhost.png";
 
     @Override
     public void run() {
@@ -69,7 +71,7 @@ public class GhostFigure extends Thread {
                                         final int firstCoordinate = i;
                                         final int secondCoordinate = j;
                                         Platform.runLater(() -> {
-                                            File file = new File(diamondGhostPathName);
+                                            File file = new File(DIAMOND_GHOST_PATH_NAME);
                                             Image image = new Image(file.toURI().toString());
                                             ImageView iv = new ImageView(image);
                                             Field field = matrixOfImageViews[firstCoordinate][secondCoordinate];
@@ -88,13 +90,13 @@ public class GhostFigure extends Thread {
                     counter++;
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logExceptions(GhostFigure.class, e);
                 }
             }
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                logExceptions(GhostFigure.class, e);
             }
         }
 

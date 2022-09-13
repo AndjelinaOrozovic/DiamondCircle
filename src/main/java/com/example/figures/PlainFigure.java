@@ -7,7 +7,6 @@ public class PlainFigure extends Figure {
     public PlainFigure(Color color, String imageSource) {
         super(color, imageSource);
         numberOfFieldsForMoving = 1;
-        canFallIntoHolle = true;
     }
 
     @Override

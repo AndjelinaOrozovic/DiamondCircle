@@ -7,7 +7,6 @@ public class SuperFastFigure extends Figure {
     public SuperFastFigure(Color color, String imageSource) {
         super(color, imageSource);
         numberOfFieldsForMoving = 2;
-        canFallIntoHolle = true;
     }
 
     @Override

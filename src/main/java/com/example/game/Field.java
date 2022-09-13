@@ -21,8 +21,6 @@ public class Field extends AnchorPane {
 
     private Figure figureOnField = null;
 
-    private boolean isEnd = false;
-
     public Field() {
     }
 
@@ -80,14 +78,6 @@ public class Field extends AnchorPane {
 
     public void setFigureOnField(Figure figureOnField) {
         this.figureOnField = figureOnField;
-    }
-
-    public boolean isEnd() {
-        return isEnd;
-    }
-
-    public void setEnd(boolean end) {
-        isEnd = end;
     }
 
     public boolean isHasHole() {

@@ -11,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class StartWindowController {
@@ -26,19 +25,21 @@ public class StartWindowController {
     private Button startAppButton;
 
     private Stage stage;
+
     private Scene scene;
+
     private Parent root;
 
     public static DiamondCircleController diamondCircleController;
 
-    private static final String diamondFxml = "diamond-circle-view.fxml";
+    private static final String DIAMOND_FXML = "diamond-circle-view.fxml";
 
     public void startMainWindow(ActionEvent event) throws IOException {
 
         Game.numberOfColumns = Integer.parseInt(numberOfColumnsChoiceBox.getValue().toString());
         Game.numberOfPlayers = Integer.parseInt(numberOfPlayersChoiceBox.getValue().toString());
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(diamondFxml));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(DIAMOND_FXML));
 
         root = fxmlLoader.load();
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();

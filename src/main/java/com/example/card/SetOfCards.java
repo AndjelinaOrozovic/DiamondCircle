@@ -1,5 +1,7 @@
 package com.example.card;
 
+import com.example.util.UtilHelper;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,9 +11,9 @@ import java.util.Properties;
 
 public class SetOfCards {
 
-    private static final String cardsProperties = "src/main/resources/imageSources.properties";
+    private static final String CARDS_PROPERTIES = "src/main/resources/imageSources.properties";
 
-    private List<Card> listOfCards = new ArrayList<>();
+    private final List<Card> listOfCards = new ArrayList<>();
 
     private Card card1;
     private Card card2;
@@ -23,10 +25,6 @@ public class SetOfCards {
         return listOfCards;
     }
 
-    public void setListOfCards(List<Card> listOfCards) {
-        this.listOfCards = listOfCards;
-    }
-
     public void addCards(List<Card> listOfCards, Card card, Integer numberOfCards) {
         for (int i = 0; i < numberOfCards; i++) {
             listOfCards.add(card);
@@ -36,7 +34,7 @@ public class SetOfCards {
     public void readCardImageSources() {
         try {
             Properties p = new Properties();
-            p.load(new FileInputStream(cardsProperties));
+            p.load(new FileInputStream(CARDS_PROPERTIES));
 
             card1 = new Card(p.getProperty("cardOne"), 1);
             card2 = new Card(p.getProperty("cardTwo"), 2);
@@ -45,11 +43,8 @@ public class SetOfCards {
             specialCard = new Card(p.getProperty("specialCard"), 0);
 
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            UtilHelper.logExceptions(SetOfCards.class, e);
         }
-
     }
 
     public SetOfCards() {

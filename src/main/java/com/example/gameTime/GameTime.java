@@ -9,7 +9,10 @@ import java.io.Serializable;
 
 public class GameTime extends Thread implements Serializable {
     private Label label;
-    private static final String gameTimeMessage = "Vrjeme trajanja igre: ";
+
+    private static final String GAME_TIME_MESSAGE = "Vrjeme trajanja igre: ";
+
+    public static final String GAME_TIME = "Ukupno vrijeme trajanja igre: ";
 
     public static int i = 0;
 
@@ -26,7 +29,7 @@ public class GameTime extends Thread implements Serializable {
                         DiamondCircleController.matrixOfImageViews.wait();
                     }
                     Platform.runLater(() -> {
-                        label.setText(gameTimeMessage + i++ + "s");
+                        label.setText(GAME_TIME_MESSAGE + i++ + "s");
                     });
 
                 } catch (Exception e) {
@@ -43,7 +46,7 @@ public class GameTime extends Thread implements Serializable {
 
     @Override
     public String toString() {
-        return "Ukupno vrijeme trajanja igre: " + i;
+        return GAME_TIME + i;
     }
 }
 

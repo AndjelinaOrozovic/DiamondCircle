@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Player implements Serializable {
 
-    private String name;
+    private final String name;
 
     private int currentPlayerId = 1;
 
@@ -15,7 +15,7 @@ public class Player implements Serializable {
 
     private boolean isPlaying = true;
 
-    private List<Figure> figures;
+    private final List<Figure> figures;
 
     private int currentFigureID;
 
@@ -24,8 +24,8 @@ public class Player implements Serializable {
     public Player(String name, List<Figure> figures) {
         this.name = name;
         this.figures = figures;
-        for(int i = 0; i < figures.size(); i++) {
-            figures.get(i).setOwnerName(name);
+        for (Figure figure : figures) {
+            figure.setOwnerName(name);
         }
         currentFigure = figures.get(0);
         currentFigureID = 0;
@@ -36,16 +36,8 @@ public class Player implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public List<Figure> getFigures() {
         return figures;
-    }
-
-    public void setFigures(List<Figure> figures) {
-        this.figures = figures;
     }
 
     public boolean isPlaying() {
@@ -70,45 +62,24 @@ public class Player implements Serializable {
     }
 
     private String figuresListToString() {
-        String figuresList = "";
-        for(int i = 0; i < figures.size(); i++) {
-            figuresList += figures.get(i).toString() + "\n";
+        StringBuilder figuresList = new StringBuilder();
+        for (Figure figure : figures) {
+            figuresList.append(figure.toString()).append("\n");
         }
-        return figuresList;
-    }
-
-    public int getCurrentFigureID() {
-        return currentFigureID;
-    }
-
-    public void setCurrentFigureID(int currentFigureID) {
-        this.currentFigureID = currentFigureID;
+        return figuresList.toString();
     }
 
     public int getCurrentPlayerId() {
         return currentPlayerId;
     }
 
-    public void setCurrentPlayerId(int currentPlayerId) {
-        this.currentPlayerId = currentPlayerId;
-    }
-
     public Figure getCurrentFigure() {
         return currentFigure;
     }
 
-    public void setCurrentFigure(Figure currentFigure) {
-        this.currentFigure = currentFigure;
-    }
 
     @Override
     public String toString() {
-        return "\nIgrac " + currentPlayerId + " - " + name + '\n' + figuresListToString();
-//        return "Igrac " + currentPlayerId + " - " + name + '\n'
-//        + figuresListToString();
-//        return "Player{" +
-//                "name='" + name + '\'' + ", currentFigureId: " + currentFigureID +
-//                ", figures=" + figures +
-//                '}' + '\n';
+        return "Igrac " + currentPlayerId + " - " + name + '\n' + figuresListToString() + '\n';
     }
 }

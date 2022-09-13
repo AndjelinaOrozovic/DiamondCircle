@@ -7,7 +7,6 @@ public class FlyingFigure extends Figure {
     public FlyingFigure(Color color, String imageSource) {
         super(color, imageSource);
         numberOfFieldsForMoving = 1;
-        canFallIntoHolle = false;
     }
 
     @Override
